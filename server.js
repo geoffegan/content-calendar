@@ -7,9 +7,39 @@ const XLSX = require('xlsx');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const DATA_FILE = path.join(__dirname, 'data', 'entries.json');
-const CONFIG_FILE = path.join(__dirname, 'data', 'config.json');
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+// ── Data directory ────────────────────────────────────────────────────────────
+// Use DATA_DIR env var if set, otherwise use local data/ if writable, else /tmp
+function resolveDataDir() {
+  if (process.env.DATA_DIR) return path.resolve(process.env.DATA_DIR);
+  const local = path.join(__dirname, 'data');
+  try { fs.accessSync(local, fs.constants.W_OK); return local; } catch {}
+  return '/tmp/content-calendar-data';
+}
+
+const DATA_DIR = resolveDataDir();
+const DATA_FILE = path.join(DATA_DIR, 'entries.json');
+const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+
+// Seed writable data dir from bundled defaults if needed
+if (DATA_DIR !== path.join(__dirname, 'data')) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  const bundled = path.join(__dirname, 'data');
+  for (const f of ['entries.json', 'config.json']) {
+    const dest = path.join(DATA_DIR, f);
+    if (!fs.existsSync(dest)) fs.copyFileSync(path.join(bundled, f), dest);
+  }
+}
+
+// Uploads: use /tmp on read-only filesystems
+const localUploads = path.join(__dirname, 'uploads');
+let UPLOADS_DIR = localUploads;
+try { fs.accessSync(localUploads, fs.constants.W_OK); } catch {
+  UPLOADS_DIR = '/tmp/content-calendar-uploads';
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+console.log(`Data dir: ${DATA_DIR}`);
+console.log(`Uploads dir: ${UPLOADS_DIR}`);
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
