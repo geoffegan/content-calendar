@@ -296,7 +296,7 @@ function toast(msg, type = '') {
   el.className = `toast ${type}`;
   el.textContent = msg;
   document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+  setTimeout(() => el.remove(), type === 'error' ? 8000 : 3000);
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────

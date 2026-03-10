@@ -150,34 +150,39 @@ app.post('/api/import', (req, res) => {
       return s;
     }
 
-    const entries = readJSON(DATA_FILE);
-    const newEntries = [];
+    try {
+      const entries = readJSON(DATA_FILE);
+      const newEntries = [];
 
-    for (const row of rows) {
-      const name = col(row, 'name');
-      if (!name) continue;
-      newEntries.push({
-        id: genId(),
-        date: parseDate(col(row, 'date')),
-        author: col(row, 'author'),
-        name,
-        portfolio: col(row, 'portfolio'),
-        channel: col(row, 'channel'),
-        copy: col(row, 'copy'),
-        approval: col(row, 'approval', 'approval status'),
-        comments: col(row, 'comments'),
-        otherAssets: [],
-        createdAt: new Date().toISOString(),
-      });
+      for (const row of rows) {
+        const name = col(row, 'name');
+        if (!name) continue;
+        newEntries.push({
+          id: genId(),
+          date: parseDate(col(row, 'date')),
+          author: col(row, 'author'),
+          name,
+          portfolio: col(row, 'portfolio'),
+          channel: col(row, 'channel'),
+          copy: col(row, 'copy'),
+          approval: col(row, 'approval', 'approval status'),
+          comments: col(row, 'comments'),
+          otherAssets: [],
+          createdAt: new Date().toISOString(),
+        });
+      }
+
+      if (!newEntries.length) {
+        return res.status(400).json({ error: 'No rows imported — all rows were missing a Name value' });
+      }
+
+      entries.push(...newEntries);
+      writeJSON(DATA_FILE, entries);
+      res.json({ imported: newEntries.length });
+    } catch (e) {
+      console.error('Import error:', e);
+      res.status(500).json({ error: `Server error: ${e.message}` });
     }
-
-    if (!newEntries.length) {
-      return res.status(400).json({ error: 'No rows imported — all rows were missing a Name value' });
-    }
-
-    entries.push(...newEntries);
-    writeJSON(DATA_FILE, entries);
-    res.json({ imported: newEntries.length });
   });
 });
 
