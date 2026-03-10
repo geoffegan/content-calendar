@@ -275,13 +275,16 @@ async function importFile() {
   formData.append('file', input.files[0]);
   try {
     const res = await fetch('/api/import', { method: 'POST', body: formData });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `Server error ${res.status}`);
+    }
     const data = await res.json();
     await loadEntries();
     renderTable();
     toast(`Imported ${data.imported} entr${data.imported === 1 ? 'y' : 'ies'}.`, 'success');
   } catch (err) {
-    toast('Import failed.', 'error');
+    toast(`Import failed: ${err.message}`, 'error');
     console.error(err);
   }
   input.value = '';
