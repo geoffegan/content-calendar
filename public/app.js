@@ -267,6 +267,26 @@ async function uploadFile() {
   }
 }
 
+// ── Import CSV / XLSX ─────────────────────────────────────────────────────────
+async function importFile() {
+  const input = document.getElementById('import-file-input');
+  if (!input.files.length) return;
+  const formData = new FormData();
+  formData.append('file', input.files[0]);
+  try {
+    const res = await fetch('/api/import', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    await loadEntries();
+    renderTable();
+    toast(`Imported ${data.imported} entr${data.imported === 1 ? 'y' : 'ies'}.`, 'success');
+  } catch (err) {
+    toast('Import failed.', 'error');
+    console.error(err);
+  }
+  input.value = '';
+}
+
 // ── Toast ─────────────────────────────────────────────────────────────────────
 function toast(msg, type = '') {
   const el = document.createElement('div');
@@ -278,8 +298,10 @@ function toast(msg, type = '') {
 
 // ── Events ────────────────────────────────────────────────────────────────────
 function bindEvents() {
-  // Header add button
+  // Header buttons
   document.getElementById('btn-add').addEventListener('click', () => openModal());
+  document.getElementById('btn-import').addEventListener('click', () => document.getElementById('import-file-input').click());
+  document.getElementById('import-file-input').addEventListener('change', importFile);
 
   // Modal controls
   document.getElementById('modal-close').addEventListener('click', closeModal);

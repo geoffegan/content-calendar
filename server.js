@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const XLSX = require('xlsx');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,7 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage, limits: { fileSize: 20 * 1024 * 1024 } });
+const importUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -84,6 +86,67 @@ app.delete('/api/upload', (req, res) => {
   const filepath = path.join(UPLOADS_DIR, path.basename(filename));
   if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
   res.json({ ok: true });
+});
+
+// ── Import CSV / XLSX ─────────────────────────────────────────────────────────
+
+app.post('/api/import', importUpload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file' });
+
+  let workbook;
+  try {
+    workbook = XLSX.read(req.file.buffer, { type: 'buffer', cellDates: true });
+  } catch (e) {
+    return res.status(400).json({ error: 'Could not parse file' });
+  }
+
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+  function col(row, ...keys) {
+    for (const k of keys) {
+      const found = Object.keys(row).find(rk => rk.toLowerCase().trim() === k.toLowerCase());
+      if (found !== undefined && row[found] !== '') return String(row[found]).trim();
+    }
+    return '';
+  }
+
+  function parseDate(val) {
+    if (!val) return '';
+    if (val instanceof Date) return val.toISOString().slice(0, 10);
+    const s = String(val).trim();
+    const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (dmy) return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    const d = new Date(s);
+    if (!isNaN(d)) return d.toISOString().slice(0, 10);
+    return s;
+  }
+
+  const entries = readJSON(DATA_FILE);
+  const newEntries = [];
+
+  for (const row of rows) {
+    const name = col(row, 'name');
+    if (!name) continue;
+    newEntries.push({
+      id: genId(),
+      date: parseDate(col(row, 'date')),
+      author: col(row, 'author'),
+      name,
+      portfolio: col(row, 'portfolio'),
+      channel: col(row, 'channel'),
+      copy: col(row, 'copy'),
+      approval: col(row, 'approval', 'approval status'),
+      comments: col(row, 'comments'),
+      otherAssets: [],
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  entries.push(...newEntries);
+  writeJSON(DATA_FILE, entries);
+  res.json({ imported: newEntries.length });
 });
 
 // ── Config ────────────────────────────────────────────────────────────────────
