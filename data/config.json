@@ -1,0 +1,27 @@
+{
+  "channels": [
+    "LinkedIn UQ",
+    "LinkedIn SPO",
+    "UQ News",
+    "Media",
+    "Thought Leadership",
+    "Industry Association"
+  ],
+  "portfolios": [
+    "Energy Transitions",
+    "Sustainable Agrifood",
+    "Advanced Manufacturing and Enabling Technologies",
+    "Climate Change and Environment",
+    "Defence and National Security",
+    "Space",
+    "Minerals and Resources",
+    "Health and Medical Sciences"
+  ],
+  "authors": [],
+  "approvalStatuses": [
+    "Draft",
+    "Pending Approval",
+    "Approved",
+    "Published"
+  ]
+}

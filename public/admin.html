@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Content Calendar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Content Calendar — Admin</h1>
+  <div class="header-actions">
+    <a href="index.html" class="btn btn-header">&#8592; Back to Calendar</a>
+  </div>
+</header>
+
+<main class="admin-main">
+
+  <!-- Authors -->
+  <div class="admin-section">
+    <div class="admin-section-header">
+      <h2>Authors</h2>
+      <span style="font-size:12px;color:var(--muted)">Team members who can be selected as authors</span>
+    </div>
+    <div class="admin-section-body">
+      <div class="tag-list" id="authors-list"></div>
+      <div class="add-row">
+        <input type="text" id="new-author" placeholder="Full name…" maxlength="80">
+        <button class="btn btn-primary btn-sm" id="btn-add-author">Add Author</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Portfolios -->
+  <div class="admin-section">
+    <div class="admin-section-header">
+      <h2>Portfolios</h2>
+      <span style="font-size:12px;color:var(--muted)">Business units / team areas</span>
+    </div>
+    <div class="admin-section-body">
+      <div class="tag-list" id="portfolios-list"></div>
+      <div class="add-row">
+        <input type="text" id="new-portfolio" placeholder="Portfolio name…" maxlength="80">
+        <button class="btn btn-primary btn-sm" id="btn-add-portfolio">Add Portfolio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Channels -->
+  <div class="admin-section">
+    <div class="admin-section-header">
+      <h2>Channels</h2>
+      <span style="font-size:12px;color:var(--muted)">Communication channels</span>
+    </div>
+    <div class="admin-section-body">
+      <div class="tag-list" id="channels-list"></div>
+      <div class="add-row">
+        <input type="text" id="new-channel" placeholder="Channel name…" maxlength="80">
+        <button class="btn btn-primary btn-sm" id="btn-add-channel">Add Channel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approval Statuses -->
+  <div class="admin-section">
+    <div class="admin-section-header">
+      <h2>Approval Statuses</h2>
+      <span style="font-size:12px;color:var(--muted)">Workflow stages for content approval</span>
+    </div>
+    <div class="admin-section-body">
+      <div class="tag-list" id="statuses-list"></div>
+      <div class="add-row">
+        <input type="text" id="new-status" placeholder="Status name…" maxlength="60">
+        <button class="btn btn-primary btn-sm" id="btn-add-status">Add Status</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast-container"></div>
+<script src="admin.js"></script>
+</body>
+</html>

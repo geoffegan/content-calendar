@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Calendar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Content Calendar</h1>
+  <div class="header-actions">
+    <a href="admin.html" class="btn btn-header">&#9881; Admin</a>
+    <button class="btn btn-header" id="btn-add">+ Add Entry</button>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Filters -->
+  <div class="filters" id="filters">
+    <div class="filter-group">
+      <label>Date from</label>
+      <input type="date" id="f-date-from">
+    </div>
+    <div class="filter-group">
+      <label>Date to</label>
+      <input type="date" id="f-date-to">
+    </div>
+    <div class="filter-group">
+      <label>Author</label>
+      <select id="f-author"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Name</label>
+      <input type="text" id="f-name" placeholder="Search name…">
+    </div>
+    <div class="filter-group">
+      <label>Portfolio</label>
+      <select id="f-portfolio"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Channel</label>
+      <select id="f-channel"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Approval</label>
+      <select id="f-approval"><option value="">All</option></select>
+    </div>
+    <div class="filter-actions">
+      <button class="btn btn-secondary" id="btn-clear-filters">Clear</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="results-info" id="results-info"></div>
+    <table id="calendar-table">
+      <thead>
+        <tr>
+          <th class="col-date" data-sort="date">Date <span class="sort-icon">↕</span></th>
+          <th class="col-author" data-sort="author">Author <span class="sort-icon">↕</span></th>
+          <th class="col-name" data-sort="name">Name <span class="sort-icon">↕</span></th>
+          <th class="col-portfolio" data-sort="portfolio">Portfolio <span class="sort-icon">↕</span></th>
+          <th class="col-channel" data-sort="channel">Channel <span class="sort-icon">↕</span></th>
+          <th class="col-copy">Copy</th>
+          <th class="col-approval" data-sort="approval">Approval <span class="sort-icon">↕</span></th>
+          <th class="col-assets">Other Assets</th>
+          <th class="col-comments">Comments</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr><td colspan="10" class="empty-state"><strong>Loading…</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- Entry Modal -->
+<div class="modal-overlay" id="entry-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Add Entry</h2>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="entry-form" class="form-grid">
+        <input type="hidden" id="f-id">
+
+        <div class="form-group">
+          <label for="f-entry-date">Date</label>
+          <input type="date" id="f-entry-date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="f-entry-author">Author</label>
+          <select id="f-entry-author" required>
+            <option value="">Select author…</option>
+          </select>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="f-entry-name">Name</label>
+          <input type="text" id="f-entry-name" placeholder="Content piece name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="f-entry-portfolio">Portfolio</label>
+          <select id="f-entry-portfolio">
+            <option value="">Select portfolio…</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="f-entry-channel">Channel</label>
+          <select id="f-entry-channel">
+            <option value="">Select channel…</option>
+          </select>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="f-entry-approval">Approval Status</label>
+          <select id="f-entry-approval">
+            <option value="">Select status…</option>
+          </select>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="f-entry-copy">Copy</label>
+          <textarea id="f-entry-copy" placeholder="Paste or write copy here…" rows="4"></textarea>
+        </div>
+
+        <div class="form-group form-full">
+          <label>Other Assets</label>
+          <div class="assets-editor">
+            <div id="assets-list-editor"></div>
+            <div class="asset-add-row">
+              <input type="text" id="asset-link-url" placeholder="Paste URL…">
+              <input type="text" id="asset-link-name" placeholder="Label (optional)">
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-add-link">Add Link</button>
+            </div>
+            <div class="asset-divider">or upload a file</div>
+            <div class="asset-add-row">
+              <input type="file" id="asset-file-input" style="flex:1">
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-upload-file">Upload</button>
+            </div>
+            <div id="upload-progress" style="font-size:12px;color:var(--muted);display:none">Uploading…</div>
+          </div>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="f-entry-comments">Comments</label>
+          <textarea id="f-entry-comments" placeholder="Internal notes…" rows="3"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="btn-delete" style="display:none">Delete Entry</button>
+      <div class="modal-footer-right">
+        <button class="btn btn-ghost" id="btn-cancel">Cancel</button>
+        <button class="btn btn-primary" id="btn-save">Save Entry</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="app.js"></script>
+</body>
+</html>

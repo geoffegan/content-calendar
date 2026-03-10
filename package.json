@@ -1,0 +1,13 @@
+{
+  "name": "content-calendar",
+  "version": "1.0.0",
+  "description": "Team content calendar",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^2.0.0"
+  }
+}
