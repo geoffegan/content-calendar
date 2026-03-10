@@ -40,10 +40,12 @@ function populateSelect(el, values, placeholder) {
 
 function populateFilterDropdowns() {
   populateSelect(document.getElementById('f-author'), config.authors, 'All');
+  populateSelect(document.getElementById('f-content-type'), config.contentTypes || [], 'All');
   populateSelect(document.getElementById('f-portfolio'), config.portfolios, 'All');
   populateSelect(document.getElementById('f-channel'), config.channels, 'All');
   populateSelect(document.getElementById('f-approval'), config.approvalStatuses, 'All');
   populateSelect(document.getElementById('f-entry-author'), config.authors, 'Select author…');
+  populateSelect(document.getElementById('f-entry-content-type'), config.contentTypes || [], 'Select type…');
   populateSelect(document.getElementById('f-entry-portfolio'), config.portfolios, 'Select portfolio…');
   populateSelect(document.getElementById('f-entry-channel'), config.channels, 'Select channel…');
   populateSelect(document.getElementById('f-entry-approval'), config.approvalStatuses, 'Select status…');
@@ -52,26 +54,28 @@ function populateFilterDropdowns() {
 // ── Filters ───────────────────────────────────────────────────────────────────
 function getFilters() {
   return {
-    dateFrom: document.getElementById('f-date-from').value,
-    dateTo:   document.getElementById('f-date-to').value,
-    author:   document.getElementById('f-author').value,
-    name:     document.getElementById('f-name').value.toLowerCase(),
-    portfolio: document.getElementById('f-portfolio').value,
-    channel:  document.getElementById('f-channel').value,
-    approval: document.getElementById('f-approval').value,
+    dateFrom:    document.getElementById('f-date-from').value,
+    dateTo:      document.getElementById('f-date-to').value,
+    author:      document.getElementById('f-author').value,
+    name:        document.getElementById('f-name').value.toLowerCase(),
+    contentType: document.getElementById('f-content-type').value,
+    portfolio:   document.getElementById('f-portfolio').value,
+    channel:     document.getElementById('f-channel').value,
+    approval:    document.getElementById('f-approval').value,
   };
 }
 
 function applyFilters(list) {
   const f = getFilters();
   return list.filter(e => {
-    if (f.dateFrom && e.date < f.dateFrom) return false;
-    if (f.dateTo   && e.date > f.dateTo)   return false;
-    if (f.author   && e.author !== f.author) return false;
-    if (f.name     && !(e.name || '').toLowerCase().includes(f.name)) return false;
-    if (f.portfolio && e.portfolio !== f.portfolio) return false;
-    if (f.channel  && e.channel !== f.channel) return false;
-    if (f.approval && e.approval !== f.approval) return false;
+    if (f.dateFrom    && e.date < f.dateFrom) return false;
+    if (f.dateTo      && e.date > f.dateTo)   return false;
+    if (f.author      && e.author !== f.author) return false;
+    if (f.name        && !(e.name || '').toLowerCase().includes(f.name)) return false;
+    if (f.contentType && e.contentType !== f.contentType) return false;
+    if (f.portfolio   && e.portfolio !== f.portfolio) return false;
+    if (f.channel     && e.channel !== f.channel) return false;
+    if (f.approval    && e.approval !== f.approval) return false;
     return true;
   });
 }
@@ -129,6 +133,7 @@ function renderTable() {
       <td class="col-date">${fmtDate(e.date)}</td>
       <td class="col-author">${escHtml(e.author)}</td>
       <td class="col-name"><strong>${escHtml(e.name)}</strong></td>
+      <td class="col-content-type">${e.contentType ? `<span class="chip">${escHtml(e.contentType)}</span>` : '—'}</td>
       <td class="col-portfolio">${escHtml(e.portfolio)}</td>
       <td class="col-channel">${e.channel ? `<span class="chip">${escHtml(e.channel)}</span>` : '—'}</td>
       <td class="col-copy"><div class="cell-truncate">${escHtml(e.copy)}</div></td>
@@ -161,6 +166,7 @@ function openModal(entry = null) {
   document.getElementById('f-entry-date').value = entry?.date || '';
   document.getElementById('f-entry-author').value = entry?.author || '';
   document.getElementById('f-entry-name').value = entry?.name || '';
+  document.getElementById('f-entry-content-type').value = entry?.contentType || '';
   document.getElementById('f-entry-portfolio').value = entry?.portfolio || '';
   document.getElementById('f-entry-channel').value = entry?.channel || '';
   document.getElementById('f-entry-copy').value = entry?.copy || '';
@@ -202,8 +208,9 @@ async function saveEntry() {
   const data = {
     date:       document.getElementById('f-entry-date').value,
     author:     document.getElementById('f-entry-author').value,
-    name:       document.getElementById('f-entry-name').value.trim(),
-    portfolio:  document.getElementById('f-entry-portfolio').value,
+    name:        document.getElementById('f-entry-name').value.trim(),
+    contentType: document.getElementById('f-entry-content-type').value,
+    portfolio:   document.getElementById('f-entry-portfolio').value,
     channel:    document.getElementById('f-entry-channel').value,
     copy:       document.getElementById('f-entry-copy').value.trim(),
     approval:   document.getElementById('f-entry-approval').value,
@@ -342,14 +349,14 @@ function bindEvents() {
   });
 
   // Filters
-  ['f-date-from','f-date-to','f-author','f-name','f-portfolio','f-channel','f-approval'].forEach(id => {
+  ['f-date-from','f-date-to','f-author','f-name','f-content-type','f-portfolio','f-channel','f-approval'].forEach(id => {
     document.getElementById(id).addEventListener('input', renderTable);
     document.getElementById(id).addEventListener('change', renderTable);
   });
 
   document.getElementById('btn-clear-filters').addEventListener('click', () => {
     ['f-date-from','f-date-to','f-name'].forEach(id => document.getElementById(id).value = '');
-    ['f-author','f-portfolio','f-channel','f-approval'].forEach(id => document.getElementById(id).value = '');
+    ['f-author','f-content-type','f-portfolio','f-channel','f-approval'].forEach(id => document.getElementById(id).value = '');
     renderTable();
   });
 

@@ -7,6 +7,7 @@ async function init() {
 }
 
 function render() {
+  renderList('content-types-list', config.contentTypes || [], 'content-types');
   renderList('authors-list', config.authors, 'authors');
   renderList('portfolios-list', config.portfolios, 'portfolios');
   renderList('channels-list', config.channels, 'channels');
@@ -47,6 +48,7 @@ async function addItem(apiKey, value, configKey) {
 async function removeItem(apiKey, value) {
   if (!confirm(`Remove "${value}"? Existing entries will keep this value but it won't appear in new dropdowns.`)) return;
   const configKeyMap = {
+    'content-types': 'contentTypes',
     'authors': 'authors',
     'portfolios': 'portfolios',
     'channels': 'channels',
@@ -73,6 +75,7 @@ function bindEvents() {
     btn.addEventListener('click', () => { addItem(apiKey, input.value, configKey); input.value = ''; });
     input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addItem(apiKey, input.value, configKey); input.value = ''; } });
   }
+  addOnEnterAndClick('new-content-type', 'btn-add-content-type', 'content-types', 'contentTypes');
   addOnEnterAndClick('new-author', 'btn-add-author', 'authors', 'authors');
   addOnEnterAndClick('new-portfolio', 'btn-add-portfolio', 'portfolios', 'portfolios');
   addOnEnterAndClick('new-channel', 'btn-add-channel', 'channels', 'channels');

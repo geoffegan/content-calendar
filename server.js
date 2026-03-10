@@ -193,6 +193,7 @@ app.post('/api/import', (req, res) => {
           author: col(row, 'author'),
           name,
           portfolio: col(row, 'portfolio'),
+          contentType: col(row, 'content type', 'contenttype', 'type'),
           channel: col(row, 'channel'),
           copy: col(row, 'copy'),
           approval: col(row, 'approval', 'approval status'),
@@ -248,6 +249,7 @@ const channelHandlers = configListHandler('channels');
 const portfolioHandlers = configListHandler('portfolios');
 const authorHandlers = configListHandler('authors');
 const statusHandlers = configListHandler('approvalStatuses');
+const contentTypeHandlers = configListHandler('contentTypes');
 
 app.post('/api/config/channels', channelHandlers.add);
 app.delete('/api/config/channels', channelHandlers.remove);
@@ -257,6 +259,8 @@ app.post('/api/config/authors', authorHandlers.add);
 app.delete('/api/config/authors', authorHandlers.remove);
 app.post('/api/config/approval-statuses', statusHandlers.add);
 app.delete('/api/config/approval-statuses', statusHandlers.remove);
+app.post('/api/config/content-types', contentTypeHandlers.add);
+app.delete('/api/config/content-types', contentTypeHandlers.remove);
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 

@@ -39,6 +39,10 @@
       <input type="text" id="f-name" placeholder="Search name…">
     </div>
     <div class="filter-group">
+      <label>Content Type</label>
+      <select id="f-content-type"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
       <label>Portfolio</label>
       <select id="f-portfolio"><option value="">All</option></select>
     </div>
@@ -64,6 +68,7 @@
           <th class="col-date" data-sort="date">Date <span class="sort-icon">↕</span></th>
           <th class="col-author" data-sort="author">Author <span class="sort-icon">↕</span></th>
           <th class="col-name" data-sort="name">Name <span class="sort-icon">↕</span></th>
+          <th class="col-content-type" data-sort="contentType">Content Type <span class="sort-icon">↕</span></th>
           <th class="col-portfolio" data-sort="portfolio">Portfolio <span class="sort-icon">↕</span></th>
           <th class="col-channel" data-sort="channel">Channel <span class="sort-icon">↕</span></th>
           <th class="col-copy">Copy</th>
@@ -74,7 +79,7 @@
         </tr>
       </thead>
       <tbody id="table-body">
-        <tr><td colspan="10" class="empty-state"><strong>Loading…</strong></td></tr>
+        <tr><td colspan="11" class="empty-state"><strong>Loading…</strong></td></tr>
       </tbody>
     </table>
   </div>
@@ -106,6 +111,13 @@
         <div class="form-group form-full">
           <label for="f-entry-name">Name</label>
           <input type="text" id="f-entry-name" placeholder="Content piece name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="f-entry-content-type">Content Type</label>
+          <select id="f-entry-content-type">
+            <option value="">Select type…</option>
+          </select>
         </div>
 
         <div class="form-group">
